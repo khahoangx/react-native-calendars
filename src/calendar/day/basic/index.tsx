@@ -5,7 +5,10 @@ import {xdateToData} from '../../../interface';
 import {Theme, DayState, MarkingTypes, DateData} from '../../../types';
 import styleConstructor from './style';
 import Marking, {MarkingProps} from '../marking';
+import moment from 'moment';
+import {CalendarVietnamese} from 'date-chinese';
 
+const calendar = new CalendarVietnamese();
 
 export interface BasicDayProps extends ViewProps {
   state?: DayState;
@@ -150,10 +153,22 @@ const BasicDay = (props: BasicDayProps) => {
   };
 
   const renderText = () => {
+    const gregorian = moment(date, 'YYYY-MM-DD');
+    calendar.fromGregorian(
+      Number(gregorian.format('YYYY')),
+      Number(gregorian.format('M')),
+      Number(gregorian.format('D'))
+    );
+    let [cycle, year, month, leap, day] = calendar.get();
     return (
-      <Text allowFontScaling={false} style={getTextStyle()}>
-        {String(children)}
-      </Text>
+      <View style={{ alignItems: 'center' }}>
+        <Text allowFontScaling={false} style={[getTextStyle(), { marginTop: 1 }]}>
+          {String(children)}
+        </Text>
+        <Text allowFontScaling={false} style={[getTextStyle(), { marginTop: 0, fontSize: 9, top: -4 }]}>
+          {String(day == 1 ? `${day}/${month}` : day)}
+        </Text>
+      </View>
     );
   };
 
